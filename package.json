@@ -1,0 +1,24 @@
+{
+  "name": "forum-sanbercode",
+  "version": "1.0.0",
+  "description": "Tugas akhir pelatihan intensif nodejs Sanbercode.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/svckdude/forum-sanbercode.git"
+  },
+  "author": "svckdude",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/svckdude/forum-sanbercode/issues"
+  },
+  "homepage": "https://gitlab.com/svckdude/forum-sanbercode#readme",
+  "dependencies": {
+    "pg": "^7.8.2",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^5.1.0"
+  }
+}
