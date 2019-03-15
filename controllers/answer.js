@@ -1,11 +1,11 @@
 const Question = require('../models').Question;
+const Answer = require('../models').Answer;
 const User = require('../models').User;
-const VoteQuestion = require('../models/').VoteQuestion;
 
 module.exports = {
 
   list(req, res) {
-    return Question
+    return Answer
       .findAll({
         order: [
           ['id', 'DESC']
@@ -13,53 +13,57 @@ module.exports = {
         include: [{
           model: User,
           as: 'author'
+        },
+        {
+          model: Question,
+          as: 'question'
         }]
       })
-      .then((questions) => res.status(200).send(questions))
+      .then((answers) => res.status(200).send(answers))
       .catch((error) => res.status(400).send(error));
   },
   getById(req, res) {
-    return Question
+    return Answer
       .findByPk(req.params.id, {
         include: [{
           model: User,
           as: 'author'
         }]
       })
-      .then((question) => {
-        if (!question) {
-          return res.status(404).send({message: 'Question not found'})
+      .then((answer) => {
+        if (!answer) {
+          return res.status(404).send({message: 'Answer not found'})
         }
-        return res.status(200).send(question)
+        return res.status(200).send(answer)
       })
       .catch((error) => res.status(400).send(error));
   },
   add(req, res) {
-    return Question
+    return Answer
       .create({
-        title: req.body.title,
-        question: req.body.question,
+        answer: req.body.answer,
+        questionId: req.body.questionId,
         userId: req.body.userId
       })
-      .then((question) => res.status(201).send(question))
+      .then((answer) => res.status(201).send(answer))
       .catch((error) => res.status(400).send(error))
   },
   update(req, res) {
     // 
   },
   delete(req, res) {
-    return Question
+    return Answer
       .findByPk(req.params.id)
-      .then((question) => {
-        if (!question) {
-          return res.status(404).send({message: 'Question not found'})
+      .then((answer) => {
+        if (!answer) {
+          return res.status(404).send({message: 'Answer not found'})
         }
-        return question
+        return answer
           .destroy()
           .then(() => res.status(204).send())
           .catch((error) => res.status(400).send(error));
       })
       .catch((error) => res.status(400).send(error));
-  },
+  }
 
 };

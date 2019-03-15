@@ -5,6 +5,8 @@ const controller = require('../controllers');
 const authController = controller.auth;
 const userController = controller.user;
 const questionController = controller.question;
+const answerController = controller.answer;
+const votequestionController = controller.votequestion;
 
 /* GET home page. */
 // router.get('/', function(req, res, next) {
@@ -14,6 +16,7 @@ router.get('/', questionController.list);
 
 // Auth Router
 router.post('/api/register', authController.register);
+router.post('/api/login', authController.login);
 
 /* User Router */
 router.get('/api/user', userController.list);
@@ -27,5 +30,15 @@ router.get('/api/question/:id', questionController.getById);
 router.post('/api/question', questionController.add);
 router.put('/api/question/:id', questionController.update);
 router.delete('/api/question/:id', questionController.delete);
+
+// Answer Router
+router.get('/api/answer', answerController.list);
+router.get('/api/answer/:id', answerController.getById);
+router.post('/api/answer', answerController.add);
+router.put('/api/answer/:id', answerController.update);
+router.delete('/api/answer/:id', answerController.delete);
+
+// VoteQuestion Router
+router.post('/api/votequestion', votequestionController.vote);
 
 module.exports = router;
