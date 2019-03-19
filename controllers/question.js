@@ -39,7 +39,8 @@ module.exports = {
       .create({
         title: req.body.title,
         question: req.body.question,
-        userId: req.body.userId
+        status: 'new',
+        userId: req.currentUser.id
       })
       .then((question) => res.status(201).send(question))
       .catch((error) => res.status(400).send(error))

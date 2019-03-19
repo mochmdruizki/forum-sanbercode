@@ -12,7 +12,7 @@ module.exports = {
       })
       .then((user) => {
         if (user) {
-          return res.status(404).send({message: 'Email already taken'})
+          return res.status(400).send({message: 'Email already taken'})
         }
         return User
           .create({

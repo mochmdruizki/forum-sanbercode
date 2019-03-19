@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+// Middlewares
+const isLogin = require('../middlewares/auth');
+
 const controller = require('../controllers');
 const authController = controller.auth;
 const userController = controller.user;
@@ -27,7 +30,7 @@ router.delete('/api/user/:id', userController.delete);
 // Question Router
 router.get('/api/question', questionController.list);
 router.get('/api/question/:id', questionController.getById);
-router.post('/api/question', questionController.add);
+router.post('/api/question', isLogin, questionController.add);
 router.put('/api/question/:id', questionController.update);
 router.delete('/api/question/:id', questionController.delete);
 
