@@ -5,50 +5,73 @@ const VoteQuestion = require('../models').VoteQuestion;
 module.exports = {
 
   vote(req, res) {
-    return VoteQuestion
-      .findOne({
-        where: {
-          userId: req.body.userId,
-          questionId: req.body.questionId,
-          type: req.body.type
-        }
-      })
-      .then((votequestion) => {
-        if (votequestion) {
-          res.status(400).json({error: 'This user already voted up question'});
+    return Question
+      .findByPk(req.body.questionId)
+      .then((question) => {
+        // check if user voted their own question
+        if (req.currentUser.id == question.userId) {
+          res.status(400).json({message: 'User can\'t vote their own question'});
         } else {
           VoteQuestion
-            .create({
-              userId: req.body.userId,
-              questionId: req.body.questionId,
-              type: req.body.type
-            })
-            .then( 
-              (votequestion) => {
-                // get voter, add 1 reputation
-                User
-                  .findByPk(req.body.userId)
-                  .then((user) => user.update({reputation: user.reputation + 1}))
-                  .catch((error) => res.status(400).send(error))
-                // get author of question, add 2 reputation if upvote
-                Question
-                  .findByPk(votequestion.questionId, {
-                    include: [{
-                      model: User,
-                      as: 'author'
-                    }]
-                  })
-                  .then((question) => {
-                    if (req.body.type == 'up') {
-                      question.author.update({reputation: question.author.reputation + 2})
-                    } else {
-                      question.author.update({reputation: question.author.reputation - 1})
-                    }
-                  })
-                  .catch((error) => res.status(400).send(error))
-                res.status(201).send(votequestion)
+            .findOne({
+              where: {
+                userId: req.currentUser.id,
+                questionId: req.body.questionId,
+                type: req.body.type
               }
-            )
+            })
+            .then((voteQuestion) => {
+              // check if user already vote this question
+              if (voteQuestion) {
+                res.status(400).json({message: 'User can only voted a question once'});
+              } else {
+                // check if downvoter's reputation is >= 5
+                User
+                .findByPk(req.currentUser.id)
+                .then((user) => {
+                  if (req.body.type == "down" && user.reputation < 5) {
+                    res.status(400).json({message: 'User\'s reputation must be 5 and above to downvote a question'})
+                  } else {
+                    VoteQuestion
+                      .create({
+                        userId: req.currentUser.id,
+                        questionId: req.body.questionId,
+                        type: req.body.type
+                      })
+                      .then( () => {
+                        res.status(201).json({message: 'Vote successfully created'});
+                        // calculate voter reputation
+                        User
+                          .findByPk(req.currentUser.id)
+                          .then((user) => {
+                            if (req.body.type == 'up') {
+                              user.update({reputation: user.reputation + 1})
+                            } else {
+                              user.update({reputation: user.reputation - 2})
+                            }
+                            
+                          })
+                          .catch((error) => res.status(400).send(error))
+                        
+                        // calculate author reputation
+                        User
+                          .findByPk(question.userId)
+                          .then((user) => {
+                            if (req.body.type == 'up') {
+                              user.update({reputation: user.reputation + 2})
+                            } else {
+                              user.update({reputation: user.reputation - 1})
+                            }
+                            
+                          })
+                          .catch((error) => res.status(400).send(error))
+                      })
+                      .catch((error) => res.status(400).send(error))
+                  }
+                })
+                .catch((error) => res.status(400).send(error))
+              }
+            })
             .catch((error) => res.status(400).send(error))
         }
       })

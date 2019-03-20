@@ -1,5 +1,4 @@
 const User = require('../models').User;
-var bcrypt = require('bcryptjs');
 
 module.exports = {
 

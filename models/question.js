@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     Question.hasMany(models.VoteQuestion, {
       foreignKey: 'questionId',
-      as: 'vote_questions'
+      as: 'voteQuestions'
     });
   };
   return Question;

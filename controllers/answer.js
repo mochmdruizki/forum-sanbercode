@@ -39,11 +39,14 @@ module.exports = {
       .catch((error) => res.status(400).send(error));
   },
   add(req, res) {
+    if ((req.body.answer == null || req.body.questionId == null) || (req.body.answer == "" || req.body.questionId == "")) {
+      return res.status(400).json({message: 'Title and question cannot blank'});
+    }
     return Answer
       .create({
         answer: req.body.answer,
         questionId: req.body.questionId,
-        userId: req.body.userId
+        userId: req.currentUser.id
       })
       .then((answer) => res.status(201).send(answer))
       .catch((error) => res.status(400).send(error))
@@ -57,6 +60,9 @@ module.exports = {
       .then((answer) => {
         if (!answer) {
           return res.status(404).send({message: 'Answer not found'})
+        }
+        if (answer.userId != req.currentUser.id) {
+          return res.status(400).json({message: 'User has no access to delete this answer'})
         }
         return answer
           .destroy()

@@ -13,7 +13,12 @@ module.exports = {
         include: [{
           model: User,
           as: 'author'
-        }]
+        },
+        {
+          model: VoteQuestion,
+          as: 'voteQuestions'
+        }
+      ]
       })
       .then((questions) => res.status(200).send(questions))
       .catch((error) => res.status(400).send(error));
@@ -24,7 +29,12 @@ module.exports = {
         include: [{
           model: User,
           as: 'author'
-        }]
+        },
+        {
+          model: VoteQuestion,
+          as: 'voteQuestions'
+        }
+      ]
       })
       .then((question) => {
         if (!question) {
@@ -35,6 +45,9 @@ module.exports = {
       .catch((error) => res.status(400).send(error));
   },
   add(req, res) {
+    if ((req.body.title == null || req.body.question == null) || (req.body.title == "" || req.body.question == "")) {
+      return res.status(400).json({message: 'Title and question cannot blank'});
+    }
     return Question
       .create({
         title: req.body.title,
@@ -55,6 +68,9 @@ module.exports = {
         if (!question) {
           return res.status(404).send({message: 'Question not found'})
         }
+        // if (question.userId != req.currentUser.id) {
+        //   return res.status(400).json({message: 'User has no access to delete this question'})
+        // }
         return question
           .destroy()
           .then(() => res.status(204).send())
