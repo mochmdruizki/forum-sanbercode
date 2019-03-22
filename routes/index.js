@@ -10,6 +10,7 @@ const userController = controller.user;
 const questionController = controller.question;
 const answerController = controller.answer;
 const votequestionController = controller.votequestion;
+const voteanswerController = controller.voteanswer;
 
 /* GET home page. */
 // router.get('/', function(req, res, next) {
@@ -43,5 +44,8 @@ router.delete('/api/answer/:id', isLogin, answerController.delete);
 
 // VoteQuestion Router
 router.post('/api/votequestion', isLogin, votequestionController.vote);
+
+// VoteAnswer Router
+router.post('/api/voteanswer', isLogin, voteanswerController.vote);
 
 module.exports = router;
