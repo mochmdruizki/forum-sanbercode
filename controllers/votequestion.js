@@ -40,18 +40,13 @@ module.exports = {
                       })
                       .then( () => {
                         res.status(201).json({message: 'Vote successfully created'});
+                        
                         // calculate voter reputation
-                        User
-                          .findByPk(req.currentUser.id)
-                          .then((user) => {
-                            if (req.body.type == 'up') {
-                              user.update({reputation: user.reputation + 1})
-                            } else {
-                              user.update({reputation: user.reputation - 2})
-                            }
-                            
-                          })
-                          .catch((error) => res.status(400).send(error))
+                        if (req.body.type == 'up') {
+                          user.update({reputation: user.reputation + 1})
+                        } else {
+                          user.update({reputation: user.reputation - 2})
+                        }
                         
                         // calculate author reputation
                         User
@@ -64,18 +59,18 @@ module.exports = {
                             }
                             
                           })
-                          .catch((error) => res.status(400).send(error))
+                          .catch((error) => res.status(400).json(error))
                       })
-                      .catch((error) => res.status(400).send(error))
+                      .catch((error) => res.status(400).json(error))
                   }
                 })
-                .catch((error) => res.status(400).send(error))
+                .catch((error) => res.status(400).json(error))
               }
             })
-            .catch((error) => res.status(400).send(error))
+            .catch((error) => res.status(400).json(error))
         }
       })
-      .catch((error) => res.status(400).send(error))
+      .catch((error) => res.status(400).json(error))
     
   },
 

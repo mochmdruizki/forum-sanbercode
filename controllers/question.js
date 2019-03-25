@@ -1,12 +1,19 @@
-const Question = require('../models').Question;
-const User = require('../models').User;
-const VoteQuestion = require('../models/').VoteQuestion;
+const model = require('../models');
+const Question = model.Question;
+const Answer = model.Answer;
+const User = model.User;
+const VoteQuestion = model.VoteQuestion;
 
 module.exports = {
 
   list(req, res) {
     return Question
       .findAll({
+        // attributes: {
+        //   include: [
+        //     [model.sequelize.fn("COUNT", model.sequelize.col("voteQuestions.id")), "voteCount"]
+        //   ]
+        // }, /* it still return SequelizeDatabaseError */
         order: [
           ['id', 'DESC']
         ],
@@ -20,8 +27,8 @@ module.exports = {
         }
       ]
       })
-      .then((questions) => res.status(200).send(questions))
-      .catch((error) => res.status(400).send(error));
+      .then((questions) => res.status(200).json(questions))
+      .catch((error) => res.status(400).json(error));
   },
   getById(req, res) {
     return Question
@@ -38,11 +45,12 @@ module.exports = {
       })
       .then((question) => {
         if (!question) {
-          return res.status(404).send({message: 'Question not found'})
+          res.status(404).json({message: 'Question not found'})
+        } else {
+          res.status(200).json(question)
         }
-        return res.status(200).send(question)
       })
-      .catch((error) => res.status(400).send(error));
+      .catch((error) => res.status(400).json(error));
   },
   add(req, res) {
     if ((req.body.title == null || req.body.question == null) || (req.body.title == "" || req.body.question == "")) {
@@ -55,8 +63,8 @@ module.exports = {
         status: 'new',
         userId: req.currentUser.id
       })
-      .then((question) => res.status(201).send(question))
-      .catch((error) => res.status(400).send(error))
+      .then((question) => res.status(201).json(question))
+      .catch((error) => res.status(400).json(error))
   },
   update(req, res) {
     // 
@@ -66,17 +74,42 @@ module.exports = {
       .findByPk(req.params.id)
       .then((question) => {
         if (!question) {
-          return res.status(404).send({message: 'Question not found'})
+          res.status(404).json({message: 'Question not found'})
+        } else {
+          if (question.userId != req.currentUser.id) {
+            res.status(401).json({message: 'Unauthorized'})
+          } else {
+            question
+              .destroy()
+              .then(() => res.status(204).json({message: 'Question successfully deleted'}))
+              .catch((error) => res.status(400).json(error));
+          }
         }
-        // if (question.userId != req.currentUser.id) {
-        //   return res.status(400).json({message: 'User has no access to delete this question'})
-        // }
-        return question
-          .destroy()
-          .then(() => res.status(204).send())
-          .catch((error) => res.status(400).send(error));
       })
       .catch((error) => res.status(400).send(error));
   },
+  answer(req, res) {
+    return Question
+      .findByPk(req.params.id, {})
+      .then((question) => {
+        if (!question) {
+          res.status(404).json({message: 'Question not found'})
+        } else {
+          if (req.body.answer == null || req.body.answer == "") {
+            res.status(400).json({message: 'Answer cannot blank'})
+          } else {
+            Answer
+              .create({
+                answer: req.body.answer,
+                questionId: req.params.id,
+                userId: req.currentUser.id
+              })
+              .then((answer) => res.status(201).json(answer))
+              .catch((error) => res.status(400).json(error))
+          }
+        }
+      })
+      .catch((error) => res.status(400).json(error))
+  }
 
 };

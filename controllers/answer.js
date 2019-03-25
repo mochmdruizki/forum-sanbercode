@@ -38,19 +38,6 @@ module.exports = {
       })
       .catch((error) => res.status(400).send(error));
   },
-  add(req, res) {
-    if ((req.body.answer == null || req.body.questionId == null) || (req.body.answer == "" || req.body.questionId == "")) {
-      return res.status(400).json({message: 'Title and question cannot blank'});
-    }
-    return Answer
-      .create({
-        answer: req.body.answer,
-        questionId: req.body.questionId,
-        userId: req.currentUser.id
-      })
-      .then((answer) => res.status(201).send(answer))
-      .catch((error) => res.status(400).send(error))
-  },
   update(req, res) {
     // 
   },

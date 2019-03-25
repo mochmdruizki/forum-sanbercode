@@ -24,7 +24,7 @@ function auth(req, res, next) {
     })
     
   } else {
-    res.status(400).json({error: 'Token must provided'});
+    res.status(401).json({message: 'Unauthorized'});
   }
 }
 

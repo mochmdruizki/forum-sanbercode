@@ -11,19 +11,20 @@ module.exports = {
         where: {email: req.body.email}
       })
       .then((user) => {
-        if (user) {
-          return res.status(400).send({message: 'Email already taken'})
+        if (user) { 
+          res.status(400).json({message: 'Email already taken'}) 
+        } else {
+          User
+            .create({
+              name: req.body.name,
+              email: req.body.email,
+              password: hash
+            })
+            .then((user) => res.status(201).json(user))
+            .catch((error) => res.status(400).json(error))
         }
-        return User
-          .create({
-            name: req.body.name,
-            email: req.body.email,
-            password: hash
-          })
-          .then((user) => res.status(201).send(user))
-          .catch((error) => res.status(400).send(error))
       })
-      .catch((error) => res.status(400).send(error));
+      .catch((error) => res.status(400).json(error));
   },
   login(req, res) {
     return User
@@ -32,15 +33,14 @@ module.exports = {
       })
       .then((user) => {
         if (!user) {
-          return res.status(404).send({message: 'Invalid email'})
+          res.status(400).json({message: 'Invalid email'})
         } else {
           if (bcrypt.compareSync(req.body.password, user.password)) {
             var data = { id: user.id, email: user.email };
             var token = jwt.sign(data, 'secretKey');
             res.status(200).json({token: token});
           } else {
-            res.status(400).json({error: 'Invalid password'});
-            
+            res.status(400).json({error: 'Invalid password'});  
           }
         }
       })

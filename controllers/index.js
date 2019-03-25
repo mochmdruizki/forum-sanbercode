@@ -1,15 +1,15 @@
 const auth = require('./auth');
-const user = require('./user');
+const user = require('./user'); /* for dev only, remove on production */
 const question = require('./question');
 const answer = require('./answer');
-const votequestion = require('./votequestion');
-const voteanswer = require('./voteanswer');
+const voteQuestion = require('./votequestion');
+const voteAnswer = require('./voteanswer');
 
 module.exports = {
   auth,
   user,
   question,
   answer,
-  votequestion,
-  voteanswer
+  voteQuestion,
+  voteAnswer
 };
