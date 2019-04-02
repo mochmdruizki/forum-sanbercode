@@ -8,7 +8,7 @@ const controller = require('../controllers');
 const auth = controller.auth;
 const user = controller.user;
 const question = controller.question;
-const answerController = controller.answer;
+const answer = controller.answer;
 const voteQuestion = controller.voteQuestion;
 const voteAnswer = controller.voteQuestion;
 
@@ -34,13 +34,12 @@ router.get('/api/questions/:id', question.getById);
 router.post('/api/questions', isLogin, question.add);
 router.put('/api/questions/:id', isLogin, question.update);
 router.delete('/api/questions/:id', isLogin, question.delete);
-router.post('/api/questions/:id/answer', question.answer);
 
 // Answer Router
-router.get('/api/answer', answerController.list);
-router.get('/api/answer/:id', answerController.getById);
-router.put('/api/answer/:id', isLogin, answerController.update);
-router.delete('/api/answer/:id', isLogin, answerController.delete);
+router.get('/api/answers/:id', answer.getById);
+router.post('/api/questions/:id/answer', isLogin, answer.add);
+router.put('/api/answers/:id', answer.update);
+router.delete('/api/answers/:id', isLogin, answer.delete);
 
 // VoteQuestion Router
 router.post('/api/votequestion', isLogin, voteQuestion.vote);

@@ -1,8 +1,6 @@
 const model = require('../models');
 const Question = model.Question;
 const Answer = model.Answer;
-const User = model.User;
-const VoteQuestion = model.VoteQuestion;
 
 module.exports = {
 
@@ -11,37 +9,19 @@ module.exports = {
       .findAll({
         // attributes: {
         //   include: [
-        //     [model.sequelize.fn("COUNT", model.sequelize.col("voteQuestions.id")), "voteCount"]
+        //     [model.sequelize.fn("COUNT", model.sequelize.col("votes.id")), "voteCount"]
         //   ]
         // }, /* it still return SequelizeDatabaseError */
-        order: [
-          ['id', 'DESC']
-        ],
-        include: [{
-          model: User,
-          as: 'author'
-        },
-        {
-          model: VoteQuestion,
-          as: 'voteQuestions'
-        }
-      ]
+        order: [['id', 'DESC']]
       })
       .then((questions) => res.status(200).json(questions))
       .catch((error) => res.status(400).json(error));
   },
   getById(req, res) {
+    // return res.status(404).json({message: 'Question not found'});
     return Question
       .findByPk(req.params.id, {
-        include: [{
-          model: User,
-          as: 'author'
-        },
-        {
-          model: VoteQuestion,
-          as: 'voteQuestions'
-        }
-      ]
+        include: [{model: Answer, as: 'answers'}]
       })
       .then((question) => {
         if (!question) {
@@ -53,14 +33,13 @@ module.exports = {
       .catch((error) => res.status(400).json(error));
   },
   add(req, res) {
-    if ((req.body.title == null || req.body.question == null) || (req.body.title == "" || req.body.question == "")) {
-      return res.status(400).json({message: 'Title and question cannot blank'});
+    if ((req.body.title == null || req.body.description == null) || (req.body.title == "" || req.body.description == "")) {
+      return res.status(400).json({message: 'Title and description cannot blank'});
     }
     return Question
       .create({
         title: req.body.title,
-        question: req.body.question,
-        status: 'new',
+        description: req.body.description,
         userId: req.currentUser.id
       })
       .then((question) => res.status(201).json(question))
@@ -87,29 +66,6 @@ module.exports = {
         }
       })
       .catch((error) => res.status(400).send(error));
-  },
-  answer(req, res) {
-    return Question
-      .findByPk(req.params.id, {})
-      .then((question) => {
-        if (!question) {
-          res.status(404).json({message: 'Question not found'})
-        } else {
-          if (req.body.answer == null || req.body.answer == "") {
-            res.status(400).json({message: 'Answer cannot blank'})
-          } else {
-            Answer
-              .create({
-                answer: req.body.answer,
-                questionId: req.params.id,
-                userId: req.currentUser.id
-              })
-              .then((answer) => res.status(201).json(answer))
-              .catch((error) => res.status(400).json(error))
-          }
-        }
-      })
-      .catch((error) => res.status(400).json(error))
   }
 
 };

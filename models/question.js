@@ -2,8 +2,8 @@
 module.exports = (sequelize, DataTypes) => {
   const Question = sequelize.define('Question', {
     title: DataTypes.STRING,
-    question: DataTypes.TEXT,
-    status: DataTypes.STRING,
+    description: DataTypes.TEXT,
+    status: DataTypes.BOOLEAN,
     userId: DataTypes.INTEGER
   }, {});
   Question.associate = function(models) {

@@ -9,15 +9,20 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       answer: {
-        type: Sequelize.TEXT
-      },
-      userId: {
-        type: Sequelize.INTEGER
+        allowNull: false,
+        type: Sequelize.STRING
       },
       questionId: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      userId: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       isApproved: {
+        allowNull: false,
+        defaultValue: false,
         type: Sequelize.BOOLEAN
       },
       createdAt: {

@@ -9,15 +9,15 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       title: {
+        allowNull: false,
         type: Sequelize.STRING
       },
-      question: {
+      description: {
+        allowNull: false,
         type: Sequelize.TEXT
       },
-      status: {
-        type: Sequelize.STRING
-      },
       userId: {
+        allowNull: false,
         type: Sequelize.INTEGER
       },
       createdAt: {
